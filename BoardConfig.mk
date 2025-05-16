@@ -159,6 +159,8 @@ TW_INCLUDE_FB2PNG := false
 TW_INCLUDE_DUMLOCK := false
 TW_NO_HAPTICS := true
 TWRP_INCLUDE_LOGCAT := false
+TW_EXCLUDE_DEFAULT_USB_INIT := true
+
 
 # TWRP Configuration
 TW_THEME := portrait_hdpi
