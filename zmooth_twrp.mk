@@ -15,7 +15,7 @@ $(call inherit-product, vendor/omni/config/common.mk)
 $(call inherit-product, device/gsl/zmooth/device.mk)
 
 PRODUCT_DEVICE := zmooth
-PRODUCT_NAME := omni_zmooth
+PRODUCT_NAME := zmooth_twrp
 PRODUCT_BRAND := ZMOOTH
 PRODUCT_MODEL := ZMOOTH
 PRODUCT_MANUFACTURER := gsl
