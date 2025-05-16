@@ -56,7 +56,7 @@ BOARD_BOOTIMG_HEADER_VERSION := 1
 BOARD_KERNEL_CMDLINE := console=ttyFIQ0
 BOARD_KERNEL_CMDLINE += androidboot.baseband=N/A
 BOARD_KERNEL_CMDLINE += androidboot.wificountrycode=JP
-BOARD_KERNEL_CMDLINE += androidboot.veritymode=enforcing
+BOARD_KERNEL_CMDLINE += androidboot.veritymode=disabled
 BOARD_KERNEL_CMDLINE += androidboot.hardware=rk30board
 BOARD_KERNEL_CMDLINE += androidboot.console=ttyFIQ0
 BOARD_KERNEL_CMDLINE += firmware_class.path=/vendor/etc/firmware init=/init
