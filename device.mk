@@ -17,9 +17,6 @@ PRODUCT_PACKAGES += \
     android.hardware.health@2.0-impl.recovery \
     android.hardware.health@2.0-service
 
-# Overlays
-PRODUCT_ENFORCE_RRO_TARGETS := *
-
 # Product characteristics
 PRODUCT_CHARACTERISTICS := tablet
 
