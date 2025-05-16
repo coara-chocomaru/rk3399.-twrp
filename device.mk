@@ -20,6 +20,19 @@ PRODUCT_PACKAGES += \
 # Product characteristics
 PRODUCT_CHARACTERISTICS := tablet
 
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+    ro.build.system_root_image=true \
+    ro.product.board=rk30sdk \
+    ro.product.device=Zkai-study-Tab \
+    ro.product.model=ZMOOTH \
+    ro.product.locale=ja-JP \
+    persist.sys.locale=ja-JP \
+    ro.treble.enabled=true \
+    ro.build.characteristics=tablet \
+    persist.sys.usb.config=mtp \
+    ro.boot.boot_devices=fe330000.sdhci \
+    ro.target.product=tablet
+
 PRODUCT_PACKAGES += \
     otapreopt_script \
     cppreopts.sh \
