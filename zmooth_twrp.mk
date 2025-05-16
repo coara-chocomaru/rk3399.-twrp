@@ -12,7 +12,6 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 # Inherit some common Omni stuff.
 $(call inherit-product, vendor/omni/config/common.mk)
 
-# Inherit from a05bd device
 $(call inherit-product, device/gsl/zmooth/device.mk)
 
 PRODUCT_DEVICE := Zkai-study-Tab
