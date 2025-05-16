@@ -8,8 +8,8 @@
 
 set -e
 
-DEVICE=a05bd
-VENDOR=sts
+DEVICE=zmooth
+VENDOR=gsl
 
 # Load extract_utils and do some sanity checks
 MY_DIR="${BASH_SOURCE%/*}"
