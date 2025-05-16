@@ -15,15 +15,15 @@ $(call inherit-product, vendor/omni/config/common.mk)
 # Inherit from a05bd device
 $(call inherit-product, device/gsl/zmooth/device.mk)
 
-PRODUCT_DEVICE := a05bd
-PRODUCT_NAME := omni_a05bd
-PRODUCT_BRAND := benesse
-PRODUCT_MODEL := a05bd
-PRODUCT_MANUFACTURER := sts
+PRODUCT_DEVICE := Zkai-study-Tab
+PRODUCT_NAME := omni_zmooth
+PRODUCT_BRAND := ZMOOTH
+PRODUCT_MODEL := ZMOOTH
+PRODUCT_MANUFACTURER := gsl
 
-PRODUCT_GMS_CLIENTID_BASE := android-sts
+PRODUCT_GMS_CLIENTID_BASE := android-gsl
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    PRIVATE_BUILD_DESC="TAB-A05-BD-user 9 01.00.000 01.00.000 release-keys"
+    PRIVATE_BUILD_DESC="rk3399_mid-user 9 PI 104515 release-keys"
 
-BUILD_FINGERPRINT := benesse/TAB-A05-BD/TAB-A05-BD:9/01.00.000/01.00.000:user/release-keys
+BUILD_FINGERPRINT := ZMOOTH/rk3399_mid/rk3399_mid:9/PI/imt04181045:user/release-keys
