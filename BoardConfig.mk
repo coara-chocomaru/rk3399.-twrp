@@ -150,7 +150,7 @@ TW_USE_FSCRYPT_POLICY := 1
 TW_EXCLUDE_TWRPAPP := true
 TW_EXCLUDE_PYTHON := true
 TW_HAS_NO_BOOTLOADER := true
-
+TW_NO_REBOOT_BOOTLOADER := true
 
 # TWRP Configuration
 TW_THEME := portrait_hdpi
