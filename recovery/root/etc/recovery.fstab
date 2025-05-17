@@ -4,6 +4,7 @@
 
 # mount point    fstype     device                 device2                        flags
 
+/cache           ext4              /dev/block/by-name/cache                          flags=backup=1;backupname=cashe;display=cashe
 /boot            emmc              /dev/block/by-name/boot                           flags=backup=1;flashimg=1;display="boot"
 /recovery        emmc              /dev/block/by-name/recovery                       flags=backup=1;flashimg=1;display="recovery"
 /system          ext4              /dev/block/by-name/system                         flags=backup=1;display="System"
@@ -12,7 +13,6 @@
 /vendor          ext4              /dev/block/by-name/vendor                         flags=display="Vendor";backup=1
 /vendor_image    emmc              /dev/block/by-name/vendor                         flags=backup=1;display="vendor_image"
 /oem             ext4              /dev/block/by-name/oem                            flags=backup=1;backupname=oem;display=oem
-/cache           ext4              /dev/block/by-name/cache                          flags=backup=1;backupname=cashe;display=cashe
 /metadata        ext4              /dev/block/by-name/metadata                       flags=backup=1;backupname=metadata;display=metadata
 /uboot           emmc              /dev/block/by-name/uboot                          flags=backup=1;backupname=Uboot;display=Uboot
 /resource        emmc              /dev/block/by-name/resource                       flags=backup=1;backupname=Resource;display=Resource
