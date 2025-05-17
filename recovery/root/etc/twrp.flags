@@ -1,6 +1,6 @@
 # Android fstab file.
 #<src>                                       <mnt_point>         <type>    <mnt_flags and options>       <fs_mgr_flags>
-/dev/block/by-name/system                /system_as_root      ext4             defaults                  backup,backupname=System,display=System
+/dev/block/by-name/system                /system　　　　　      ext4             defaults                  backup,backupname=System,display=System
 /dev/block/by-name/vendor                /vendor              ext4             defaults                  backup,backupname=vendor,display=vendor
 /dev/block/by-name/oem                   /oem                 ext4             defaults                  backup,backupname=oem,display=oem
 /dev/block/by-name/cache                 /cache               ext4             defaults                  backup,backupname=cashe,display=cashe
@@ -19,6 +19,6 @@
 /dev/block/by-name/kernel                /kernel              emmc             defaults                  backup,backupname=kernel,display=kernel
 /dev/block/by-name/misc                  /misc                emmc             defaults                  backup,backupname=misc,display=misc
 /dev/block/by-name/frp                   /frp                 emmc             defaults                  backup,backupname=frp,display=frp
-/dev/block/mmcblk1                       /                    emmc             defaults                  backup,backupname=full-emmc,display=full-emmc
-/dev/block/mmcblk0p1                     /external_sdcard     auto             defaults
+/dev/block/mmcblk1                       /                    emmc             defaults                  backup,backupname=full-emmc,display=full-dump
+/dev/block/mmcblk0p1                     /external_sdcard     auto             defaults                  flags=storage;removable
 /devices/platform/usb0/                  /usb4                auto             defaults                  display=Usb4,storage,storagename=Usb4,voldmanaged=usb:auto
