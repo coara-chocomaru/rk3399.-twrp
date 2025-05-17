@@ -1,0 +1,3 @@
+mount cache
+run_program /sbin/losetup /dev/block/loop6 /cache/key_file
+mount data
