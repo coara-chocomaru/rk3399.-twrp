@@ -1,24 +1,31 @@
 # Android fstab file.
-#<src>                                       <mnt_point>         <type>    <mnt_flags and options>       <fs_mgr_flags>
-/dev/block/by-name/system                /system　　　　　      ext4             defaults                  backup,backupname=System,display=System
-/dev/block/by-name/vendor                /vendor              ext4             defaults                  backup,backupname=vendor,display=vendor
-/dev/block/by-name/oem                   /oem                 ext4             defaults                  backup,backupname=oem,display=oem
-/dev/block/by-name/cache                 /cache               ext4             defaults                  backup,backupname=cashe,display=cashe
-/dev/block/by-name/metadata              /metadata            ext4             defaults                  backup,backupname=metadata,display=metadata
-/dev/block/by-name/userdata              /data                f2fs             defaults                  encryptable=/cache/key_file,backup,backupname=data,display=data
-/dev/block/by-name/uboot                 /uboot               emmc             defaults                  backup,backupname=Uboot,display=Uboot
-/dev/block/by-name/resource              /resource            emmc             defaults                  backup,backupname=Resource,display=Resource
-/dev/block/by-name/boot                  /boot                emmc             defaults                  backup,backupname=Boot,display=Boot
-/dev/block/by-name/recovery              /recovery            emmc             defaults                  backup,backupname=recovery,display=recovery
-/dev/block/by-name/trust                 /trust               emmc             defaults                  backup,backupname=Trust,display=Trust
-/dev/block/by-name/vbmeta                /vbmeta              emmc             defaults                  backup,backupname=vbmeta,display=vbmeta
-/dev/block/by-name/backup                /backup              emmc             defaults                  backup,backupname=backup,display=backup
-/dev/block/by-name/dtb                   /dtb                 emmc             defaults                  backup,backupname=dtb,display=dtb
-/dev/block/by-name/dtbo                  /dtbo                emmc             defaults                  backup,backupname=dtbo,display=dtbo
-/dev/block/by-name/security              /security            emmc             defaults                  backup,backupname=security,display=security
-/dev/block/by-name/kernel                /kernel              emmc             defaults                  backup,backupname=kernel,display=kernel
-/dev/block/by-name/misc                  /misc                emmc             defaults                  backup,backupname=misc,display=misc
-/dev/block/by-name/frp                   /frp                 emmc             defaults                  backup,backupname=frp,display=frp
-/dev/block/mmcblk1                       /                    emmc             defaults                  backup,backupname=full-emmc,display=full-dump
-/dev/block/mmcblk0p1                     /external_sdcard     auto             defaults                  flags=storage;removable
-/devices/platform/usb0/                  /usb4                auto             defaults                  display=Usb4,storage,storagename=Usb4,voldmanaged=usb:auto
+# The filesystem that contains the filesystem checker binary (typically /system) cannot
+# specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
+
+# mount point    fstype     device                 device2                        flags
+
+/boot            emmc              /dev/block/by-name/boot                           flags=slotselect;backup=1;flashimg=1
+/system          ext4              /dev/block/by-name/system                         flags=backup=1;display="System"
+/system_image    emmc              /dev/block/by-name/system                         flags=backup=1;display="System_image"
+/data            f2fs              /dev/block/by-name/userdata                       flags=encryptable=/cache/key_file;backup=1;display="Data"
+/vendor          ext4              /dev/block/by-name/vendor                         flags=display="Vendor";backup=1;wipeingui
+/vendor_image    emmc              /dev/block/by-name/vendor                         flags=backup=1;display="vendor_image"
+/oem             ext4              /dev/block/by-name/oem                            flags=backup=1;backupname=oem;display=oem
+/cache           ext4              /dev/block/by-name/cache                          flags=backup=1;backupname=cashe,display=cashe
+/metadata        ext4              /dev/block/by-name/metadata                       flags=backup=1;backupname=metadata,display=metadata
+/uboot           emmc              /dev/block/by-name/uboot                          flags=backup=1;backupname=Uboot,display=Uboot
+/resource        emmc              /dev/block/by-name/resource                       flags=backup=1;backupname=Resource,display=Resource
+/trust           emmc              /dev/block/by-name/trust                          flags=backup=1;backupname=Trust,display=Trust
+/vbmeta          emmc              /dev/block/by-name/vbmeta                         flags=backup=1;backupname=vbmeta,display=vbmeta
+/backup          emmc              /dev/block/by-name/backup                         flags=backup=1;backupname=backup,display=backup
+/dtb             emmc              /dev/block/by-name/dtb                            flags=backup=1;backupname=dtb,display=dtb
+/dtbo            emmc              /dev/block/by-name/dtbo                           flags=backup=1;backupname=dtbo,display=dtbo
+/security        emmc              /dev/block/by-name/security                       flags=backup=1;backupname=security,display=security
+/kernel          emmc              /dev/block/by-name/kernel                         flags=backup=1,backupname=kernel,display=kernel
+/misc            emmc              /dev/block/by-name/misc                           flags=backup=1;backupname=misc,display=misc
+/frp             emmc              /dev/block/by-name/frp                            flags=backup=1;backupname=frp,display=frp
+# Removable storage
+/usb-otg         auto              /dev/block/sda1         /dev/block/sda       flags=removable;storage;display="USB OTG"
+/full            emmc              /dev/block/mmcblk1                           flags=backup=1;display="full-dump"
+/external_sdcard     auto          /dev/block/mmcblk0p1                         flags=storage;removable
+/usb4                auto          /devices/platform/usb0/                      flags=display=Usb4,storage,storagename=Usb4,voldmanaged=usb:auto
