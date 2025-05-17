@@ -25,7 +25,7 @@ on early-init
 
     start ueventd
 
-service set_permissive /sbin/permissive.sh
+service set_permissive /sbin/set_permissive.sh
     oneshot
     seclabel u:r:recovery:s0
 
@@ -119,6 +119,11 @@ service ueventd /sbin/ueventd
 service recovery /sbin/recovery
     seclabel u:r:recovery:s0
 
+service console /sbin/sh
+    console
+    disabled
+    seclabel u:r:shell:s0
+
 service adbd /sbin/adbd --root_seclabel=u:r:su:s0 --device_banner=recovery
     disabled
     socket adbd stream 660 system system
@@ -138,7 +143,4 @@ on property:service.adb.root=1
     #write /sys/class/android_usb/android0/enable 1
 
 
-service console /sbin/sh
-    console
-    disabled
-    seclabel u:r:shell:s0
+
