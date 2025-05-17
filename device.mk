@@ -16,7 +16,7 @@ PRODUCT_PACKAGES += \
     android.hardware.health@2.0-impl \
     android.hardware.health@2.0-impl.recovery \
     android.hardware.health@2.0-service
-
+# key
 PRODUCT_PACKAGES += \
     libkeymaster3.vendor \
     libkeymaster3support.vendor \
@@ -31,6 +31,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.build.system_root_image=true \
     ro.product.board=rk30sdk \
     ro.product.device=Zkai-study-Tab \
+    ro.product.manufacturer=GSL \
     ro.product.model=ZMOOTH \
     ro.product.locale=ja-JP \
     persist.sys.locale=ja-JP \
