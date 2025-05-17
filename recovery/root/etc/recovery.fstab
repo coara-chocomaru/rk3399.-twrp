@@ -4,7 +4,8 @@
 
 # mount point    fstype     device                 device2                        flags
 
-/boot            emmc              /dev/block/by-name/boot                           flags=slotselect;backup=1;flashimg=1
+/boot            emmc              /dev/block/by-name/boot                           flags=backup=1;flashimg=1;display="boot"
+/recovery        emmc              /dev/block/by-name/recovery                       flags=backup=1;flashimg=1;display="recovery"
 /system          ext4              /dev/block/by-name/system                         flags=backup=1;display="System"
 /system_image    emmc              /dev/block/by-name/system                         flags=backup=1;display="System_image"
 /data            f2fs              /dev/block/by-name/userdata                       flags=encryptable=/cache/key_file;backup=1;display="Data"
