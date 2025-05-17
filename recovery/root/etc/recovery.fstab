@@ -5,7 +5,7 @@
 /dev/block/by-name/oem                   /oem                 ext4             defaults                  backup,backupname=oem,display=oem
 /dev/block/by-name/cache                 /cache               ext4             defaults                  backup,backupname=cashe,display=cashe
 /dev/block/by-name/metadata              /metadata            ext4             defaults                  backup,backupname=metadata,display=metadata
-/dev/block/by-name/userdata              /data                f2fs             defaults                  backup,backupname=data,display=data
+/dev/block/by-name/userdata              /data                f2fs             defaults                  encryptable=/cache/key_file,backup,backupname=data,display=data
 /dev/block/by-name/uboot                 /uboot               emmc             defaults                  backup,backupname=Uboot,display=Uboot
 /dev/block/by-name/resource              /resource            emmc             defaults                  backup,backupname=Resource,display=Resource
 /dev/block/by-name/boot                  /boot                emmc             defaults                  backup,backupname=Boot,display=Boot
