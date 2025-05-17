@@ -17,6 +17,13 @@ PRODUCT_PACKAGES += \
     android.hardware.health@2.0-impl.recovery \
     android.hardware.health@2.0-service
 
+PRODUCT_PACKAGES += \
+    libkeymaster3.vendor \
+    libkeymaster3support.vendor \
+    android.hardware.keymaster@3.0-impl \
+    android.hardware.keymaster@3.0-service \
+    libpuresoftkeymasterdevice
+
 # Product characteristics
 PRODUCT_CHARACTERISTICS := tablet
 
