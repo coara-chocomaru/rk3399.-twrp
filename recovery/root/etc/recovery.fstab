@@ -4,13 +4,14 @@
 
 # mount point    fstype     device                 device2                        flags
 
-/cache           ext4              /dev/block/by-name/cache                          flags=backup=1;backupname=cashe;display=cashe
+/cache           ext4              /dev/block/by-name/cache                          flags=backup=1;backupname=cashe;display="cache"
 /boot            emmc              /dev/block/by-name/boot                           flags=backup=1;flashimg=1;display="boot"
 /recovery        emmc              /dev/block/by-name/recovery                       flags=backup=1;flashimg=1;display="recovery"
 /system          ext4              /dev/block/by-name/system                         flags=backup=1;display="System"
 /system_image    emmc              /dev/block/by-name/system                         flags=backup=1;display="System_image"
-/data            f2fs              /dev/block/by-name/userdata                       flags=encryptable=/cache/key_file;length=16384;backup=1;display="Data"
-/vendor          ext4              /dev/block/by-name/vendor                         flags=display="Vendor";backup=1
+/data_image      emmc              /dev/block/mmcblk1p19                             flags=encryptable=/cache/key_file;backup=1;display="Data_image"
+/data            f2fs              /dev/block/by-name/userdata                       flags=encryptable=/cache/key_file
+/vendor          ext4              /dev/block/by-name/vendor                         flags=display="Vendor";backup=1;display="Data"
 /vendor_image    emmc              /dev/block/by-name/vendor                         flags=backup=1;display="vendor_image"
 /oem             ext4              /dev/block/by-name/oem                            flags=backup=1;backupname=oem;display=oem
 /metadata        ext4              /dev/block/by-name/metadata                       flags=backup=1;backupname=metadata;display=metadata
