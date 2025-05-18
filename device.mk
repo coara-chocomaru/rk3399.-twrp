@@ -45,7 +45,9 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.build.characteristics=tablet \
     persist.sys.usb.config=mtp \
     ro.boot.boot_devices=fe330000.sdhci \
-    ro.target.product=tablet
+    ro.target.product=tablet \
+    ro.build.version.security_patch=2019-12-05 \
+    ro.build.version.release=9
 
 PRODUCT_PACKAGES += \
     otapreopt_script \
