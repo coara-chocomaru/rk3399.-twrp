@@ -16,21 +16,6 @@ PRODUCT_PACKAGES += \
     android.hardware.health@2.0-impl \
     android.hardware.health@2.0-impl.recovery \
     android.hardware.health@2.0-service
-# key
-PRODUCT_PACKAGES += \
-    libkeymaster3.vendor \
-    libkeymaster3support.vendor \
-　　 libkeymaster4support \
-    libvold \
-    libcryptfs \
-    libkeymaster_portable \
-    android.hardware.gatekeeper@1.0-impl \
-    android.hardware.gatekeeper@1.0-service \
-    android.hardware.gatekeeper@1.0.vendor \
-    android.hardware.keymaster@3.0-impl \
-    android.hardware.keymaster@3.0-service \
-    libpuresoftkeymasterdevice \
-    libf2fs 
 
 # Product characteristics
 PRODUCT_CHARACTERISTICS := tablet
