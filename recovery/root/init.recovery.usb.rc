@@ -14,57 +14,40 @@ on init
     start hwservicemanager
     setprop crypto.ready 1
 
-service keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service
-    class early_hal
+service hwservicemanager /sbin/hwservicemanager
     user root
-    group root drmrpc
+    group root
+    disabled
+    onrestart setprop hwservicemanager.ready false
+    seclabel u:r:recovery:s0
+
+service servicemanager /sbin/servicemanager
+    user root
+    group root readproc
+    disabled
     seclabel u:r:recovery:s0
 
 service gatekeeper-1-0 /sbin/android.hardware.gatekeeper@1.0-service
-    class hal
     user root
     group root
+    disabled
     seclabel u:r:recovery:s0
 
-service hwservicemanager /sbin/hwservicemanager
-    class animation
+service keymaster-3-0  /sbin/android.hardware.keymaster@3.0-service
     user root
+    group root
     disabled
-    group root readproc
-    critical
-    onrestart setprop hwservicemanager.ready false
-    onrestart class_restart hal
-    onrestart class_restart early_hal
-    writepid /dev/cpuset/system-background/tasks
-    shutdown critical
-    seclabel u:r:recovery:s0　
-
-service servicemanager /sbin/servicemanager
-    class core animation
-    user root
-    disabled
-    group root readproc
-    critical
-    onrestart restart drm
-    writepid /dev/cpuset/system-background/tasks
-    shutdown critical
     seclabel u:r:recovery:s0
 
-service keystore /sbin/keystore /data/misc/keystore
-    class main
-    user root
-    disabled
-    group root drmrpc readproc
-    writepid /dev/cpuset/foreground/tasks
-    seclabel u:r:recovery:s0
+on property:crypto.ready=0
+    stop keymaster-3-0
+    stop gatekeeper-1-0
+    stop servicemanager
 
-on property:ro.crypto.state=encrypted
-    start hwservicemanager
+on property:vendor.sys.listeners.registered=true
     start keymaster-3-0
     start gatekeeper-1-0
-    start keystore
     start servicemanager
-
 
 on property:sys.usb.config=none
     write /sys/class/android_usb/android0/enable 0
