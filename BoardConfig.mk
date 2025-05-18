@@ -144,7 +144,7 @@ PLATFORM_VERSION := 9.0.0
 BOARD_OS_VERSION := 9.0.0
 TW_INCLUDE_CRYPTO := true
 TW_CRYPTO_SYSTEM_VOLD_MOUNT := cache vendor
-TW_CRYPTO_USE_SYSTEM_VOLD := qseecomd hwservicemanager servicemanager keymaster-3-0
+TW_CRYPTO_USE_SYSTEM_VOLD := true
 TW_CRYPTO_SYSTEM_VOLD_DEBUG := true
 
 
