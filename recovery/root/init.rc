@@ -31,7 +31,7 @@ service set_permissive /sbin/set_permissive.sh
 
 on init
     export PATH /sbin:/system/bin:/vendor/bin
-    export LD_LIBRARY_PATH /sbin:/vendor/lib64
+    export LD_LIBRARY_PATH /sbin:/vendor/lib64:/system/lib64
 
     export ANDROID_ROOT /system
     export ANDROID_DATA /data
