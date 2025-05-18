@@ -1,7 +1,7 @@
 ro.boot.vbmeta.device_state=unlocked
 ro.boot.veritymode=disabled
 ro.crypto.type=block
-ro.crypto.volume.filenames_mode=aes-256-cts
+ro.hardware=rk30board
 ro.boot.avb_version=1.1
 ro.boot.vbmeta.avb_version=1.1
 ro.boot.vbmeta.hash_alg=sha256
