@@ -1,5 +1,4 @@
 on fs
-    chmod 0777 /cache/key_file
     mkdir /vendor/lib64 0777 root root
     mkdir /vendor/lib64/hw 0777 root root
     symlink /vendor/etc/vintf/manifest.xml /system_root/system/manifest.xml
