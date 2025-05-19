@@ -1,7 +1,13 @@
 on fs
     mkdir /vendor/lib64 0777 root root
     mkdir /vendor/lib64/hw 0777 root root
-    symlink /vendor/etc/vintf/manifest.xml /system_root/system/manifest.xml
+    symlink /sbin/keystore.rk30board.so /vendor/lib64/hw/keystore.rk30board.so
+    symlink /sbin/gatekeeper.rk30board.so /vendor/lib64/hw/gatekeeper.rk30board.so
+    symlink /sbin/android.hardware.gatekeeper@1.0-impl.so /vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl.so
+    symlink /sbin/android.hardware.keymaster@3.0-impl.so /vendor/lib64/hw/android.hardware.keymaster@3.0-impl.so
+    symlink /sbin/libkeymaster3device.so /vendor/lib64/libkeymaster3device.so
+    symlink /sbin/libkeymaster2.so /vendor/lib64/libkeymaster2.so
+    symlink /vendor/manifest.xml /system_root/system/manifest.xml
     start hwservicemanager
     setprop crypto.ready 1
 
