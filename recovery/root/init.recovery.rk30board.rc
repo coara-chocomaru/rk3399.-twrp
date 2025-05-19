@@ -2,8 +2,6 @@ on fs
     
     mkdir /vendor/lib64 0777 root root
     mkdir /vendor/lib64/hw 0777 root root
-    chmod 777 /cache/key_file
-    symlink /cache/key_file /dev/block/by-name/key
     symlink /vendor/etc/vintf/manifest.xml /system_root/system/manifest.xml
     start hwservicemanager
     setprop crypto.ready 1
