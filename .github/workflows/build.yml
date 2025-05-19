@@ -3,13 +3,13 @@ name: Recovery Build (Legacy)
 on:
   push:
     branches:
-      - main  # 実行するブランチを指定
+      - test  # 実行するブランチを指定
 
 env:
   MANIFEST_URL: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni'
   MANIFEST_BRANCH: 'twrp-9.0'
   DEVICE_TREE_URL: 'https://github.com/coara-chocomaru/rk3399.-twrp'
-  DEVICE_TREE_BRANCH: 'main'
+  DEVICE_TREE_BRANCH: 'test'
   DEVICE_PATH: 'device/gsl/zmooth'
   DEVICE_NAME: 'zmooth'
   MAKEFILE_NAME: 'zmooth_twrp'
