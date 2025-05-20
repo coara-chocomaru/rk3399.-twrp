@@ -158,6 +158,7 @@ TW_USE_EXTERNAL_STORAGE := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_INCLUDE_BASH := true
 TW_INCLUDE_NANO := true
+TW_NEVER_UNMOUNT_SYSTEM := true
 TW_USE_TOOLBOX := true
 TW_INCLUDE_REPACKTOOLS := true
 TW_BRIGHTNESS_PATH := /sys/devices/platform/backlight/backlight/backlight/brightness
