@@ -1,0 +1,16 @@
+allow recovery sysfs_vibrator:file { write open getattr };
+allow recovery rootfs:lnk_file create;
+allow recovery kernel:system module_request;
+allow recovery device:chr_file getattr;
+allow recovery self:capability fsetid;
+allow recovery rootfs:fifo_file unlink;
+allow recovery self:netlink_kobject_uevent_socket read;
+allow recovery tmpfs:fifo_file { create read open };
+allow recovery self:binder { call transfer };
+allow recovery hwservice_contexts_file:file { read open getattr };
+allow recovery self:netlink_selinux_socket { create bind };
+allow recovery selinuxfs:dir read;
+allow recovery default_prop:property_service set;
+allow recovery hwservicemanager_prop:property_service set;
+allow recovery exported_system_radio_prop:property_service set;
+allow recovery ctl_interface_start_prop:property_service set;
