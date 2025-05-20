@@ -18,5 +18,6 @@ ro.opengles.version=196610
 ro.product.version=0.0.42
 ro.build.display.id=V0.02.0042
 ro.rksdk.version=RK30_ANDROID9-SDK-v1.00.00
+ro.actionable_compatible_property.enabled=false
 
 
