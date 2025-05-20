@@ -28,29 +28,46 @@ service hwservicemanager /sbin/hwservicemanager
     user root
     group root
     disabled
+    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
+    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
     onrestart setprop hwservicemanager.ready false
     seclabel u:r:recovery:s0
 
 service servicemanager /sbin/servicemanager
     user root
     group root readproc
+    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
+    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
     disabled
     seclabel u:r:recovery:s0
 
 service gatekeeper-1-0 /sbin/android.hardware.gatekeeper@1.0-service
     user root
     group root
+    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
+    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
     disabled
     seclabel u:r:recovery:s0
 
 service keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service
     user root
     group root
+    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
+    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
+    disabled
+    seclabel u:r:recovery:s0
+
+service keymaster-4-0 /sbin/android.hardware.keymaster@3.0-service
+    user root
+    group root
+    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
+    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
     disabled
     seclabel u:r:recovery:s0
 
 on property:crypto.ready=0
     stop keymaster-3-0
+    stop keymaster-4-0
     stop gatekeeper-1-0
     stop servicemanager
 
@@ -58,3 +75,4 @@ on property:vendor.sys.listeners.registered=true
     start keymaster-3-0
     start gatekeeper-1-0
     start servicemanager
+    start keymaster-4-0
