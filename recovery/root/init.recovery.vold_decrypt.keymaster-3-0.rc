@@ -1,0 +1,13 @@
+# init.recovery.vold_decrypt.rc (TWRP)
+# Service definitions for file-based encryption (FBE) decryption in recovery
+# Service names must be less than 16 characters on Android ≤7.1; makefile truncates if needed.
+# Seclabels in Android ≤7.1 must use vold domain; in Android ≥8.0 tree, seclabels are optional.
+
+service ven_keymaster-3-0 /vendor/bin/hw/android.hardware.keymaster@3.0-service
+    user root
+    group root
+    setenv PATH /vendor/bin:/system/bin
+    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib
+    disabled
+    oneshot
+    seclabel u:r:vold:s0
