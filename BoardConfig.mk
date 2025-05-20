@@ -8,7 +8,7 @@
 DEVICE_PATH := device/gsl/zmooth
 BOARD_VENDOR := gsl
 BOARD_DEVICE := zmooth
-
+BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/selinux
 AB_OTA_UPDATER := false
 BOARD_HAS_NFC := false
 BOARD_USES_NFC := false
