@@ -28,5 +28,5 @@
 # Removable storage
 /usb-otg         auto              /dev/block/sda1         /dev/block/sda       flags=removable;storage;display="USB OTG"
 /full            emmc              /dev/block/mmcblk1                           flags=backup=1;display="full-dump"
-/external_sdcard     auto          /dev/block/mmcblk0p1                         flags=storage;removable
+/external_sdcard     auto          /dev/block/mmcblk0p1    /dev/block/mmcblk0            flags=storage;removable
 auto             auto              /devices/platform/usb0/                      flags=display=Usb4;storage;storagename=Usb4
