@@ -6,3 +6,4 @@ on fs
     setprop ro.boot.vbmeta.device_state unlocked
     setprop ro.boot.verifiedbootstate orange
     setprop ro.boot.veritymode disabled
+    chmod 0777 /prop.default
