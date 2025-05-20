@@ -7,3 +7,16 @@ ro.boot.vbmeta.hash_alg=sha256
 ro.boot.vbmeta.size=5376
 ro.boot.verifiedbootstate=orange
 ro.boot.veritymode=disabled
+ro.build.data=Tue Apr 18 10:45:12 CST 2016
+ro.vendor.build.date=Tue Apr 18 10:45:12 CST 2016
+ro.product.board=rk30sdk
+ro.board.platform=rk3399
+ro.vendor.build.date.utc=1681785912
+ro.tee.storage=rkss
+ro.ril.ecclist=112,911
+ro.opengles.version=196610
+ro.product.version=0.0.42
+ro.build.display.id=V0.02.0042
+ro.rksdk.version=RK30_ANDROID9-SDK-v1.00.00
+
+
