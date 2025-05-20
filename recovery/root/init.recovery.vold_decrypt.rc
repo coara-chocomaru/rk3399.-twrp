@@ -4,5 +4,5 @@ service sys_vold /sbin/vold \
     socket vold stream 0660 root mount
     socket cryptd stream 0660 root mount
     disabled
-    oneshot
+    oneshot setprop ro.crypto.state encrypted
     seclabel u:r:recovery:s0
