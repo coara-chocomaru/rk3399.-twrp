@@ -1,68 +1,8 @@
 on fs
-    mkdir /vendor/lib64 0777 root root
-    mkdir /vendor/lib64/hw 0777 root root
-    mkdir /vendor/bin 0777 root root
-    mkdir /vendor/bin/hw 0777 root root
-    mkdir /system_root/system/bin 0777 root root
-    symlink /sbin/android.hardware.gatekeeper@1.0-service /vendor/bin/hw/android.hardware.gatekeeper@1.0-service
-    symlink /sbin/android.hardware.keymaster@3.0-service /vendor/bin/hw/android.hardware.keymaster@3.0-service
-    symlink /sbin/android.hardware.configstore@1.1-service /vendor/bin/hw/android.hardware.configstore@1.1-service
-    symlink /sbin/keystore.rk30board.so /vendor/lib64/hw/keystore.rk30board.so
-    symlink /sbin/gatekeeper.rk30board.so /vendor/lib64/hw/gatekeeper.rk30board.so
-    symlink /sbin/android.hardware.gatekeeper@1.0-impl.so /vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl.so
-    symlink /sbin/android.hardware.keymaster@3.0-impl.so /vendor/lib64/hw/android.hardware.keymaster@3.0-impl.so
-    symlink /sbin/libkeymaster3device.so /vendor/lib64/libkeymaster3device.so
-    symlink /sbin/libkeymaster2.so /vendor/lib64/libkeymaster2.so
-    symlink /sbin/libRkTeeGatekeeper.so /vendor/lib64/libRkTeeGatekeeper.so
-    symlink /sbin/libRkTeeKeymaster.so /vendor/lib64/libRkTeeKeymaster.so
-    symlink /sbin/libkeymaster_messages2.so /vendor/lib64/libkeymaster_messages2.so
-    symlink /sbin/librkgatekeeper.so /vendor/lib64/librkgatekeeper.so
-    symlink /sbin/libteec.so /vendor/lib64/libteec.so
-    symlink /sbin/tee-supplicant /vendor/bin/tee-supplicant
-    symlink /vendor/manifest.xml /system_root/system/manifest.xml
-    symlink /sbin/vold /system_root/system/bin/vold
-    start hwservicemanager
-    setprop crypto.ready 1
-
-service hwservicemanager /sbin/hwservicemanager
-    user root
-    group root
-    disabled
-    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
-    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
-    onrestart setprop hwservicemanager.ready false
-    seclabel u:r:recovery:s0
-
-service servicemanager /sbin/servicemanager
-    user root
-    group root readproc
-    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
-    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
-    disabled
-    seclabel u:r:recovery:s0
-
-service gatekeeper-1-0 /sbin/android.hardware.gatekeeper@1.0-service
-    user root
-    group root
-    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
-    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
-    disabled
-    seclabel u:r:recovery:s0
-
-service keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service
-    user root
-    group root
-    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
-    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
-    disabled
-    seclabel u:r:recovery:s0
-
-on property:crypto.ready=0
-    stop keymaster-3-0
-    stop gatekeeper-1-0
-    stop servicemanager
-
-on property:vendor.sys.listeners.registered=true
-    start keymaster-3-0
-    start gatekeeper-1-0
-    start servicemanager
+    setprop ro.actionable_compatible_property.enabled false
+    setprop ro.build.id PI
+    setprop ro.boot.avb_version 1.1
+    setprop ro.boot.vbmeta.avb_version 1.1
+    setprop ro.boot.vbmeta.device_state unlocked
+    setprop ro.boot.verifiedbootstate orange
+    setprop ro.boot.veritymode disabled
