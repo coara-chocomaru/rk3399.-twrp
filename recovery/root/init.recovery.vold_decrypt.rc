@@ -3,6 +3,8 @@ service sys_vold /sbin/vold \
         --fsck_context=u:r:fsck:s0 --fsck_untrusted_context=u:r:fsck_untrusted:s0
     socket vold stream 0660 root mount
     socket cryptd stream 0660 root mount
+    setenv PATH /vendor/bin:/system/bin:/system/vendor/bin
+    setenv LD_LIBRARY_PATH /vendor/lib64:/system/lib64:/vendor/lib:/system/lib:/system/vendor/lib64:/system/vendor/lib
     disabled
     oneshot
     seclabel u:r:recovery:s0
