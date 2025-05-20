@@ -60,7 +60,7 @@ BOARD_KERNEL_CMDLINE += androidboot.veritymode=disabled
 BOARD_KERNEL_CMDLINE += androidboot.hardware=rk30board
 BOARD_KERNEL_CMDLINE += androidboot.console=ttyFIQ0
 BOARD_KERNEL_CMDLINE += firmware_class.path=/vendor/etc/firmware init=/init
-BOARD_KERNEL_CMDLINE += rootwait ro init=/init
+BOARD_KERNEL_CMDLINE += rootwait rw init=/init
 BOARD_KERNEL_CMDLINE += root=PARTUUID=af01642c-9b84-11e8-9b2a-234eb5e198a0
 BOARD_KERNEL_CMDLINE += loop.max_part=7
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
@@ -122,7 +122,6 @@ TARGET_BOARD_PLATFORM := rk3399
 BOARD_INCLUDE_RECOVERY_DTBO := true
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
-BOARD_INCLUDE_RECOVERY_DTBO := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 RECOVERY_GRAPHICS_FORCE_USE_LINELENGTH := true
