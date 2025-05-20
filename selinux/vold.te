@@ -1,1 +1,0 @@
-allow vold exported_vold_prop:property_service set;
