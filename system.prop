@@ -1,7 +1,9 @@
-ro.boot.vbmeta.device_state=unlocked
-ro.boot.veritymode=disabled
-ro.crypto.type=block
+ro.build.id=PI
 ro.hardware=rk30board
 ro.boot.avb_version=1.1
 ro.boot.vbmeta.avb_version=1.1
-ro.boot.vbmeta.hash_alg=sha256
+ro.boot.vbmeta.device_state=unlocked
+ro.boot.verifiedbootstate=orange
+ro.boot.veritymode=disabled
+ro.actionable_compatible_property.enabled=false
+
