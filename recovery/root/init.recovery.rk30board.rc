@@ -3,6 +3,7 @@ on fs
     mkdir /vendor/lib64/hw 0777 root root
     mkdir /vendor/bin 0777 root root
     mkdir /vendor/bin/hw 0777 root root
+    mkdir /system_root/system/bin 0777 root root
     symlink /sbin/android.hardware.gatekeeper@1.0-service /vendor/bin/hw/android.hardware.gatekeeper@1.0-service
     symlink /sbin/android.hardware.keymaster@3.0-service /vendor/bin/hw/android.hardware.keymaster@3.0-service
     symlink /sbin/android.hardware.configstore@1.1-service /vendor/bin/hw/android.hardware.configstore@1.1-service
@@ -19,7 +20,9 @@ on fs
     symlink /sbin/libteec.so /vendor/lib64/libteec.so
     symlink /sbin/tee-supplicant /vendor/bin/tee-supplicant
     symlink /vendor/manifest.xml /system_root/system/manifest.xml
+    symlink /sbin/vold_decrypt /system_root/system/bin/vold_decrypt
     start hwservicemanager
+    setprop ro.crypto.state encrypted
     setprop crypto.ready 1
 
 service hwservicemanager /sbin/hwservicemanager
@@ -47,13 +50,7 @@ service keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service
     disabled
     seclabel u:r:recovery:s0
 
-service vendor.configstore-hal /sbin/android.hardware.configstore@1.1-service
-    user root
-    group root
-    disabled
-    seclabel u:r:recovery:s0
-
-service tee-supplicant /sbin/tee-supplicant
+service vold_decrypt /sbin/vold_decrypt
     user root
     group root
     disabled
@@ -63,12 +60,10 @@ on property:crypto.ready=0
     stop keymaster-3-0
     stop gatekeeper-1-0
     stop servicemanager
-    stop tee-supplicant
-    stop vendor.configstore-hal
+    stop vold_decrypt
 
 on property:vendor.sys.listeners.registered=true
     start keymaster-3-0
     start gatekeeper-1-0
     start servicemanager
-    start tee-supplicant
-    start vendor.configstore-hal
+    start vold_decrypt
