@@ -11,7 +11,6 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # Inherit some common Omni stuff.
 $(call inherit-product, vendor/omni/config/common.mk)
-$(call inherit-product, device/rockchip/common/device.mk)
 $(call inherit-product, device/gsl/zmooth/device.mk)
 
 PRODUCT_DEVICE := zmooth
@@ -19,8 +18,6 @@ PRODUCT_NAME := zmooth_twrp
 PRODUCT_BRAND := ZMOOTH
 PRODUCT_MODEL := ZMOOTH
 PRODUCT_MANUFACTURER := gsl
-PRODUCT_AAPT_PREF_CONFIG := hdpi
-PRODUCT_HAVE_OPTEE := true
 
 PRODUCT_GMS_CLIENTID_BASE := android-gsl
 
