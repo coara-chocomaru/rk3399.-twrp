@@ -1,6 +1,9 @@
-ro.boot.vbmeta.device_state=unlocked
-ro.boot.veritymode=disabled
 ro.hardware=rk30board
 ro.boot.avb_version=1.1
 ro.boot.vbmeta.avb_version=1.1
+ro.boot.vbmeta.device_state=unlocked
+ro.boot.vbmeta.digest=37bdf06c08a45044839e593f156dce543d2134a748e051fd7486bd52b061d6d4
 ro.boot.vbmeta.hash_alg=sha256
+ro.boot.vbmeta.size=5376
+ro.boot.verifiedbootstate=orange
+ro.boot.veritymode=disabled
