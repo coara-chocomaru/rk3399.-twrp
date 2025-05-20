@@ -22,7 +22,6 @@ on fs
     symlink /vendor/manifest.xml /system_root/system/manifest.xml
     symlink /sbin/vold /system_root/system/bin/vold
     start hwservicemanager
-    setprop ro.crypto.state encrypted
     setprop crypto.ready 1
 
 service hwservicemanager /sbin/hwservicemanager
@@ -50,25 +49,12 @@ service keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service
     disabled
     seclabel u:r:recovery:s0
 
-service vold /sbin/vold \
-        --blkid_context=u:r:blkid:s0 --blkid_untrusted_context=u:r:blkid_untrusted:s0 \
-        --fsck_context=u:r:fsck:s0 --fsck_untrusted_context=u:r:fsck_untrusted:s0
-    socket vold stream 0660 root mount
-    socket cryptd stream 0660 root mount
-    disabled
-    oneshot
-    user root
-    group root
-    seclabel u:r:recovery:s0
-
 on property:crypto.ready=0
     stop keymaster-3-0
     stop gatekeeper-1-0
     stop servicemanager
-    stop vold
 
 on property:vendor.sys.listeners.registered=true
     start keymaster-3-0
     start gatekeeper-1-0
     start servicemanager
-    start vold
