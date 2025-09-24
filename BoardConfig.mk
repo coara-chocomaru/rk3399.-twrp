@@ -145,7 +145,6 @@ BOARD_OS_VERSION := 9.0.0
 
 # TW EXCLUDE
 TW_EXCLUDE_TWRPAPP := true
-TW_EXCLUDE_PYTHON := true
 TW_HAS_NO_BOOTLOADER := true
 TW_NO_REBOOT_BOOTLOADER := true
 TW_NO_HAPTICS := true
@@ -164,7 +163,6 @@ TW_USE_EXTERNAL_STORAGE := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_INCLUDE_BASH := true
 TW_INCLUDE_NANO := true
-TW_USE_TOOLBOX := true
 TW_INCLUDE_REPACKTOOLS := true
 TW_BRIGHTNESS_PATH := /sys/devices/platform/backlight/backlight/backlight/brightness
 TW_DEFAULT_BRIGHTNESS := 120
