@@ -31,6 +31,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp,adb \
     ro.boot.boot_devices=fe330000.sdhci \
     ro.target.product=tablet \
+    ro.sf.hwrotation=180 \
     ro.build.version.security_patch=2019-12-05 \
     ro.build.version.release=9
 
