@@ -12,22 +12,29 @@
 #define WIPE_END_PATH "/cache/recovery/wipe_end"
 
 int main(int argc, char **argv) {
-    int mount_result = system("twrp mount /cache");
+    
+    system("twrp mount /cache");
+    
     
     int fd = open(WIPE_END_PATH, O_RDONLY);
     if (fd >= 0) {
         close(fd);
+    
         return 0;
     } else {
         system("twrp wipe data");
         system("twrp wipe cache");
+        
         system("twrp mount /cache");
+        
         struct stat st;
         if (stat(RECOVERY_DIR, &st) != 0) {
             if (mkdir(RECOVERY_DIR, 0755) != 0) {
                 perror("mkdir failed");
+                
             }
         }
+        
         fd = open(WIPE_END_PATH, O_CREAT | O_WRONLY, 0644);
         if (fd >= 0) {
             close(fd);
