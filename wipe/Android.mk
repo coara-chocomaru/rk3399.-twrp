@@ -5,7 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := wipe_helper
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
-LOCAL_SRC_FILES := wipe_helper.cpp
+LOCAL_SRC_FILES := wipe.cpp
 
 LOCAL_C_INCLUDES += \
     system/core/include \
