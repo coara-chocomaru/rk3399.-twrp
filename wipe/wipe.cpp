@@ -17,7 +17,7 @@
 #define USERDATA_BLOCK_DEVICE "/dev/block/by-name/userdata"
 #define SBIN_SH "/sbin/sh"
 #define TWRP_CMD "twrp"
-#define MKE2FS_CMD "/sbin/mke2fs"
+#define MKFS_F2FS_CMD "/sbin/mkfs.f2fs"
 
 bool file_exists(const char* path) {
     struct stat st;
@@ -66,7 +66,7 @@ int execute_shell_command(const char* cmd) {
 
 int format_with_f2fs(const char* device) {
     char cmd[512];
-    snprintf(cmd, sizeof(cmd), "%s -t f2fs %s", MKE2FS_CMD, device);
+    snprintf(cmd, sizeof(cmd), "%s %s", MKFS_F2FS_CMD, device);
     return execute_shell_command(cmd);
 }
 
@@ -83,11 +83,15 @@ int perform_twrp_wipes() {
 }
 
 int mount_cache() {
-    return mount(CACHE_BLOCK_DEVICE, CACHE_MOUNT_POINT, "f2fs", 0, NULL);
+    return execute_shell_command(TWRP_CMD " mount cache");
+}
+
+int umount_cache() {
+    return execute_shell_command(TWRP_CMD " umount /cache");
 }
 
 int main(int argc, char** argv) {
-    bool mount_success = (mount(CACHE_BLOCK_DEVICE, CACHE_MOUNT_POINT, "f2fs", 0, NULL) == 0);
+    bool mount_success = (mount_cache() == 0);
     bool wipe_end_exists = false;
 
     if (mount_success) {
@@ -96,23 +100,23 @@ int main(int argc, char** argv) {
 
     if (wipe_end_exists) {
         if (mount_success) {
-            umount(CACHE_MOUNT_POINT);
+            umount_cache();
         }
         return 0;
     } else {
+        if (mount_success) {
+            umount_cache();
+        }
         if (format_with_f2fs(USERDATA_BLOCK_DEVICE) != 0) {
             fprintf(stderr, "Failed to format userdata with f2fs\n");
-            if (mount_success) umount(CACHE_MOUNT_POINT);
             return -1;
         }
         if (format_with_f2fs(CACHE_BLOCK_DEVICE) != 0) {
             fprintf(stderr, "Failed to format cache with f2fs\n");
-            if (mount_success) umount(CACHE_MOUNT_POINT);
             return -1;
         }
 
         if (perform_twrp_wipes() != 0) {
-            if (mount_success) umount(CACHE_MOUNT_POINT);
             return -1;
         }
 
@@ -122,16 +126,16 @@ int main(int argc, char** argv) {
         }
 
         if (create_directory(RECOVERY_DIR, 0755) != 0) {
-            umount(CACHE_MOUNT_POINT);
+            umount_cache();
             return -1;
         }
 
         if (create_empty_file(WIPE_END_FILE) != 0) {
-            umount(CACHE_MOUNT_POINT);
+            umount_cache();
             return -1;
         }
 
-        umount(CACHE_MOUNT_POINT);
+        umount_cache();
         return 0;
     }
 
