@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
 
     if (wipe_end_exists) {
         if (mount_success) {
-            umount_cache();
+            mount_data();
         }
         return 0;
     } else {
