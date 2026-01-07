@@ -3,7 +3,6 @@
 # Copyright (C) 2024 SebaUbuntu's TWRP device tree generator
 #
 # SPDX-License-Identifier: Apache-2.0
-#
 
 DEVICE_PATH := device/gsl/zmooth
 BOARD_VENDOR := gsl
