@@ -86,8 +86,8 @@ int mount_cache() {
     return execute_shell_command(TWRP_CMD " mount cache");
 }
 
-int umount_cache() {
-    return execute_shell_command(TWRP_CMD " umount /cache");
+int mount_data() {
+    return execute_shell_command(TWRP_CMD " mount data");
 }
 
 int main(int argc, char** argv) {
