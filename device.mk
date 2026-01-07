@@ -9,8 +9,8 @@ LOCAL_PATH := device/gsl/zmooth
 # API levels
 PRODUCT_TARGET_VNDK_VERSION := 28
 PRODUCT_SHIPPING_API_LEVEL := 28
-
-
+PRODUCT_PACKAGES += \
+    wipe_helper
 # Health
 PRODUCT_PACKAGES += \
     android.hardware.health@2.0-impl \
