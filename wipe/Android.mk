@@ -12,4 +12,5 @@ LOCAL_STATIC_LIBRARIES := \
     liblog
 
 LOCAL_CFLAGS := -Wall -Werror -Wno-unused-parameter
+LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/sbin
 include $(BUILD_EXECUTABLE)
