@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
         return 0;
     } else {
         if (mount_success) {
-            umount_cache();
+            mount_data();
         }
         if (format_with_f2fs(USERDATA_BLOCK_DEVICE) != 0) {
             fprintf(stderr, "Failed to format userdata with f2fs\n");
@@ -126,16 +126,16 @@ int main(int argc, char** argv) {
         }
 
         if (create_directory(RECOVERY_DIR, 0755) != 0) {
-            umount_cache();
+            mount_data();
             return -1;
         }
 
         if (create_empty_file(WIPE_END_FILE) != 0) {
-            umount_cache();
+            mount_data();
             return -1;
         }
 
-        umount_cache();
+        mount_data();
         return 0;
     }
 
