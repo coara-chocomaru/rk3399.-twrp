@@ -141,22 +141,30 @@ jobs:
                   gui_print("Data mount failed (errno=%d). Trying decrypt before format...\\n", errno); \
                   bool decrypted = false; \
                   if (errno == 22 && TWFunc::Path_Exists("/data/misc/vold/user_keys")) { \
-                      gui_print("Trying FBE decrypt with default keys...\\n"); \
+                      gui_print("Trying FBE decrypt...\\n"); \
                       decrypted = (DataManager::Decrypt_Data() == 0); \
                   } \
-                  if (!decrypted && TWFunc::Path_Exists("/cache/key_file")) { \
-                      gui_print("Trying decrypt with /cache/key_file...\\n"); \
-                      std::string key; \
-                      if (TWFunc::read_file("/cache/key_file", key) == 0) { \
-                          unsigned char* key_bytes = (unsigned char*) key.data(); \
-                          char crypto_blkdev[255]; \
-                          if (cryptfs_setup_ext_volume("userdata", Actual_Block_Device.c_str(), key_bytes, key.size(), crypto_blkdev) == 0) { \
-                              Decrypted_Block_Device = crypto_blkdev; \
-                              Is_Decrypted = true; \
-                              decrypted = true; \
+                  if (!decrypted) { \
+                      PartitionManager.Mount_By_Path("/cache", true); \
+                      if (TWFunc::Path_Exists("/cache/key_file")) { \
+                          gui_print("Trying decrypt with /cache/key_file...\\n"); \
+                          std::string key; \
+                          if (TWFunc::read_file("/cache/key_file", key) == 0) { \
+                              unsigned char* key_bytes = (unsigned char*) key.data(); \
+                              char crypto_blkdev[255]; \
+                              if (cryptfs_setup_ext_volume("userdata", Actual_Block_Device.c_str(), key_bytes, key.size(), crypto_blkdev) == 0) { \
+                                  Decrypted_Block_Device = crypto_blkdev; \
+                                  Is_Decrypted = true; \
+                                  decrypted = true; \
+                                  gui_print("Decrypt success with /cache/key_file.\\n"); \
+                              } else { \
+                                  gui_err("Decrypt failed with /cache/key_file."); \
+                              } \
+                          } else { \
+                              gui_err("key_file_read_failed=Failed to read /cache/key_file."); \
                           } \
                       } else { \
-                          gui_err("key_file_read_failed=Failed to read /cache/key_file."); \
+                          gui_err("key_file_not_found=/cache/key_file not found."); \
                       } \
                   } \
                   if (decrypted) { \
