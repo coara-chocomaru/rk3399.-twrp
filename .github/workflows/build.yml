@@ -142,6 +142,18 @@ jobs:
                   if (errno == 22 && TWFunc::Path_Exists("/data/misc/vold/user_keys")) { \
                       gui_print("Trying FBE decrypt...\\n"); \
                       DataManager::Decrypt_Data(); \
+                  } else if (TWFunc::Path_Exists("/cache/key_file")) { \
+                      gui_print("Trying decrypt with /cache/key_file...\\n"); \
+                      std::string key; \
+                      if (TWFunc::read_file("/cache/key_file", key) == 0) { \
+                          unsigned char* key_bytes = (unsigned char*) key.data(); \
+                          char crypto_blkdev[255]; \
+                          cryptfs_setup_ext_volume("userdata", Actual_Block_Device.c_str(), key_bytes, key.size(), crypto_blkdev); \
+                          Decrypted_Block_Device = crypto_blkdev; \
+                          Is_Decrypted = true; \
+                      } else { \
+                          gui_err("key_file_read_failed=Failed to read /cache/key_file."); \
+                      } \
                   } \
                   Format(); \
                   PartitionManager.Wipe_By_Path("/data"); \
