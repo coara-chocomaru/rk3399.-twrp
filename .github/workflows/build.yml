@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+
     steps:
       - name: Display Run Parameters
         run: |
@@ -62,7 +63,7 @@ jobs:
           java-version: '8'
 
       - name: Setup SSH Keys
-        if: startsWith(env.MANIFEST_URL, 'git@github.com')
+        if: ${{ startsWith(env.MANIFEST_URL, 'git@github.com') }}
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: |
@@ -203,24 +204,3 @@ jobs:
             Manifest: ${{ env.MANIFEST_BRANCH }}
             Device: ${{ env.DEVICE_NAME }}
             Target: ${{ env.BUILD_TARGET }}.img
-      run: |
-        source build/envsetup.sh
-        export ALLOW_MISSING_DEPENDENCIES=true
-        lunch ${{ env.MAKEFILE_NAME }}-eng && make clean && make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
-
-    - name: Upload to Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: | 
-          workspace/out/target/product/${{ env.DEVICE_NAME }}/${{ env.BUILD_TARGET }}.img
-          workspace/out/target/product/${{ env.DEVICE_NAME }}/*.zip
-          workspace/out/target/product/${{ env.DEVICE_NAME }}/*vendor*.img
-        name: ${{ env.DEVICE_NAME }}-${{ github.run_id }}
-        tag_name: ${{ github.run_id }}
-        body: |
-          Manifest: ${{ env.MANIFEST_BRANCH }}
-          Device: ${{ env.DEVICE_NAME }}
-          Target: ${{ env.BUILD_TARGET }}.img
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
