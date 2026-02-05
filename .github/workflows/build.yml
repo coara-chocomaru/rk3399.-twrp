@@ -22,92 +22,188 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+
     steps:
-    - name: Display Run Parameters
-      run: |
-        echo "::group::User Environment Variables"
-        echo "Manifest URL: ${{ env.MANIFEST_URL }}"
-        echo "Manifest Branch: ${{ env.MANIFEST_BRANCH }}"
-        echo "Device Tree URL: ${{ env.DEVICE_TREE_URL }}"
-        echo "Device Tree Branch: ${{ env.DEVICE_TREE_BRANCH }}"
-        echo "Device Path: ${{ env.DEVICE_PATH }}"
-        echo "Device Name: ${{ env.DEVICE_NAME }}"
-        echo "Makefile Name: ${{ env.MAKEFILE_NAME }}"
-        echo "Build Target: ${{ env.BUILD_TARGET }}.img"
-        echo "::endgroup::"
- 
-    - name: Check Out
-      uses: actions/checkout@v3
+      - name: Display Run Parameters
+        run: |
+          echo "::group::User Environment Variables"
+          echo "Manifest URL: ${{ env.MANIFEST_URL }}"
+          echo "Manifest Branch: ${{ env.MANIFEST_BRANCH }}"
+          echo "Device Tree URL: ${{ env.DEVICE_TREE_URL }}"
+          echo "Device Tree Branch: ${{ env.DEVICE_TREE_BRANCH }}"
+          echo "Device Path: ${{ env.DEVICE_PATH }}"
+          echo "Device Name: ${{ env.DEVICE_NAME }}"
+          echo "Makefile Name: ${{ env.MAKEFILE_NAME }}"
+          echo "Build Target: ${{ env.BUILD_TARGET }}.img"
+          echo "::endgroup::"
 
-    - name: Cleanup
-      uses: rokibhasansagar/slimhub_actions@main
+      - name: Check Out
+        uses: actions/checkout@v3
 
-    - name: Prepare the environment
-      run: |
-        sudo apt update
-        sudo apt -y upgrade
-        sudo apt -y install gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib libc6-dev lib32ncurses5-dev x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libwxgtk3.0-gtk3-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-10-dev libncurses5 python3
+      - name: Cleanup
+        uses: rokibhasansagar/slimhub_actions@main
 
-    - name: Install OpenJDK
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'zulu'
-        java-version: '8'
+      - name: Prepare the environment
+        run: |
+          sudo apt update
+          sudo apt -y upgrade
+          sudo apt -y install \
+            gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib \
+            libc6-dev lib32ncurses5-dev x11proto-core-dev libx11-dev tree \
+            lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache \
+            lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev \
+            libsdl1.2-dev libwxgtk3.0-gtk3-dev libxml2 lzop pngcrush \
+            schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp \
+            qemu-user-static libstdc++-10-dev libncurses5 python3 libtinfo5
 
-    - name: Setup SSH Keys
-      if: ${{ startsWith(env.MANIFEST_URL, 'git@github.com') }}
-      uses: webfactory/ssh-agent@v0.5.4
-      with:
+      - name: Install OpenJDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+
+      - name: Setup SSH Keys
+        if: startsWith(env.MANIFEST_URL, 'git@github.com')
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
           ssh-private-key: |
-              ${{ secrets.SSH_PRIVATE_KEY }}
+            ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Install repo
-      run: |
-        mkdir ~/bin
-        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-        chmod a+x ~/bin/repo
-        sudo ln -sf ~/bin/repo /usr/bin/repo
-      
-    - name: Initialize repo
-      run: |
-        mkdir workspace
-        cd workspace
-        echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
-        git config --global user.name "azwhikaru"
-        git config --global user.email "azwhikaru+37921907@github.com"
-        repo init --depth=1 -u ${{ env.MANIFEST_URL }} -b ${{ env.MANIFEST_BRANCH }}
-      id: pwd
-          
-    - name: Repo Sync
-      run: |
-        repo sync -j$(nproc --all) --force-sync
-      working-directory: workspace
-      
-    - name: Move files to workspace
-      run: |
-        mkdir -p workspace/${{ env.DEVICE_PATH }}
-        ls | grep -v workspace | xargs -I{} mv {} workspace/${{ env.DEVICE_PATH }}
+      - name: Install repo
+        run: |
+          mkdir -p ~/bin
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+          chmod a+x ~/bin/repo
+          sudo ln -sf ~/bin/repo /usr/bin/repo
 
-    - name: Clone common tree
-      if: |
-        env.COMMON_TREE_URL != null
-        && env.COMMON_PATH != null
-      run: |
-        git clone ${{ env.COMMON_TREE_URL }} -b ${{ env.DEVICE_TREE_BRANCH }} ./${{ env.COMMON_PATH }}
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+      - name: Initialize repo
+        id: pwd
+        run: |
+          mkdir workspace
+          cd workspace
+          echo "workspace-folder=$(pwd)" >> "$GITHUB_OUTPUT"
+          git config --global user.name "azwhikaru"
+          git config --global user.email "azwhikaru+37921907@github.com"
+          repo init --depth=1 -u ${{ env.MANIFEST_URL }} -b ${{ env.MANIFEST_BRANCH }}
 
-    - name: Set Swap Space
-      uses: pierotofy/set-swap-space@master
-      with:
-        swap-size-gb: 12
+      - name: Repo Sync
+        working-directory: workspace
+        run: |
+          repo sync -j$(nproc --all) --force-sync
 
-    - name: Switch to Python 2
-      run: |
-        sudo apt -y install python2
-        sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
-        python --version
+      - name: Move files to workspace
+        run: |
+          mkdir -p workspace/${{ env.DEVICE_PATH }}
+          ls | grep -v workspace | xargs -I{} mv {} workspace/${{ env.DEVICE_PATH }}
 
-    - name: Building recovery
+      - name: Patch TWRP source for /cache/key_file crypto support
+        working-directory: workspace
+        run: |
+          cd bootable/recovery
+          cp twrp.cpp twrp.cpp.bak
+          cp partition.cpp partition.cpp.bak
+          cp openrecoveryscript.cpp openrecoveryscript.cpp.bak
+
+          sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' twrp.cpp
+          sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' partition.cpp
+          sed -i '1a #include <string>\n#include <cerrno>' openrecoveryscript.cpp
+
+          # twrp.cpp: Startup Commands 部分（ /cache/key_file を読み込んで decrypt 試行 + format/wipe ）
+          sed -i '/else if (\*argptr == '"'"'w'"'"') {/a \
+              if (len == 9) { \
+                  int reason_arg = index + 1; \
+                  if (reason_arg < argc && strncmp(argv[reason_arg], "--reason=", 9) == 0) { \
+                      std::string reason_str = std::string(argv[reason_arg] + 9); \
+                      gui_print("Detected reason: %s. Forcing format before wipe.\\n", reason_str.c_str()); \
+                      if (reason_str == "fs_mgr_mount_all") { \
+                          OpenRecoveryScript::Insert_ORS_Command("format data\\n"); \
+                      } \
+                  } \
+                  OpenRecoveryScript::Insert_ORS_Command("format data\\n"); \
+                  if (!OpenRecoveryScript::Insert_ORS_Command("wipe data\\n")) { \
+                      break; \
+                  } \
+              }' twrp.cpp
+
+          # twrp.cpp: ブート時チェック（ /cache/key_file を使用した decrypt 試行 ）
+          sed -i '/printf("\\n");/a \
+              PartitionManager.Mount_By_Path("/data", true); \
+              TWPartition* data = PartitionManager.Find_Partition_By_Path("/data"); \
+              if (data && !data->Is_Mounted()) { \
+                  gui_print("Boot-time /data mount failed (Invalid argument). Forcing format...\\n"); \
+                  PartitionManager.Format_Data(); \
+                  PartitionManager.Wipe_By_Path("/data"); \
+                  PartitionManager.Mount_By_Path("/data", true); \
+              }' twrp.cpp
+
+          # partition.cpp: マウント失敗時の自動修復（ /cache/key_file を鍵として decrypt 試行 ）
+          sed -i '/if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) != 0) {/a \
+              if (Mount_Point == "/data") { \
+                  gui_print("Data mount failed (errno=%d). Forcing format before cache wipe.\\n", errno); \
+                  if (errno == 22 && TWFunc::Path_Exists("/cache/key_file")) { \
+                      gui_print("Trying decrypt with /cache/key_file...\\n"); \
+                      // カスタムdecryptロジック追加: key_file読み込み → cryptfs_setup_ext_volume 呼ぶ
+                      std::string key; \
+                      if (TWFunc::read_file("/cache/key_file", key) == 0) { \
+                          unsigned char* key_bytes = (unsigned char*) key.data(); \
+                          char crypto_blkdev[255]; \
+                          cryptfs_setup_ext_volume("userdata", Actual_Block_Device.c_str(), key_bytes, key.size(), crypto_blkdev); \
+                          Decrypted_Block_Device = crypto_blkdev; \
+                          Is_Decrypted = true; \
+                      } \
+                  } \
+                  Format(); \
+                  PartitionManager.Wipe_By_Path("/data"); \
+                  gui_print("Format and wipe completed for /data.\\n"); \
+                  if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) == 0) { \
+                      return true; \
+                  } \
+              }' partition.cpp
+
+          # openrecoveryscript.cpp: wipe data / factoryreset の処理（ /cache/key_file を使用した format ）
+          sed -i '/if (strcmp(value, "data") == 0 || strcmp(value, "\/data") == 0 || strcmp(value, "factory") == 0 || strcmp(value, "factoryreset") == 0) {/a \
+              gui_print("Forcing format data before wipe to avoid loop.\\n"); \
+              PartitionManager.Format_Data(); \
+              if (PartitionManager.Wipe_By_Path("/data")) { \
+                  gui_print("Wipe data success after format.\\n"); \
+              } else { \
+                  gui_print("Wipe data failed.\\n"); \
+                  ret_val = 1; \
+              }' openrecoveryscript.cpp
+
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 12
+
+      - name: Switch to Python 2
+        run: |
+          sudo apt -y install python2
+          sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
+          python --version
+
+      - name: Building recovery
+        working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+        run: |
+          source build/envsetup.sh
+          export ALLOW_MISSING_DEPENDENCIES=true
+          lunch ${{ env.MAKEFILE_NAME }}-eng && make clean && make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            workspace/out/target/product/${{ env.DEVICE_NAME }}/${{ env.BUILD_TARGET }}.img
+            workspace/out/target/product/${{ env.DEVICE_NAME }}/*.zip
+            workspace/out/target/product/${{ env.DEVICE_NAME }}/*vendor*.img
+          name: ${{ env.DEVICE_NAME }}-${{ github.run_id }}
+          tag_name: ${{ github.run_id }}
+          body: |
+            Manifest: ${{ env.MANIFEST_BRANCH }}
+            Device: ${{ env.DEVICE_NAME }}
+            Target: ${{ env.BUILD_TARGET }}.img
       run: |
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
