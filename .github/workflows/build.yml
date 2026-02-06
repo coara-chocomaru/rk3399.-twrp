@@ -3,7 +3,7 @@ name: Recovery Build (Legacy)
 on:
   push:
     branches:
-      - test  # 実行するブランチを指定
+      - test
 
 env:
   MANIFEST_URL: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni'
@@ -14,7 +14,6 @@ env:
   DEVICE_NAME: 'zmooth'
   MAKEFILE_NAME: 'zmooth_twrp'
   BUILD_TARGET: 'recovery'
-  # COMMON_TREE_URL と COMMON_PATH は必要に応じて指定
 
 jobs:
   build:
@@ -63,13 +62,6 @@ jobs:
           distribution: zulu
           java-version: '8'
 
-      - name: Setup SSH Keys
-        if: startsWith(env.MANIFEST_URL, 'git@github.com')
-        uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: |
-            ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Install repo
         run: |
           mkdir -p ~/bin
@@ -110,6 +102,7 @@ jobs:
           sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' twrp.cpp
           sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' partition.cpp
           sed -i '1a #include <string>\n#include <cerrno>' openrecoveryscript.cpp
+          sed -i '1a #include "crypto/ext4crypt/Decrypt.h"' partition.cpp
 
           sed -i '/if (strncmp(argv\[arg\], "--w", 3) == 0) {/a \
               if (strncmp(argv[arg], "--wipe_data", 11) == 0) { \
@@ -129,24 +122,15 @@ jobs:
           sed -i '/printf("\\n");/a \
               PartitionManager.Mount_By_Path("/cache", true); \
               if (TWFunc::Path_Exists("/cache/key_file")) { \
-                  gui_print("Boot-time: Found /cache/key_file. Trying decrypt...\\n"); \
                   std::string key; \
                   if (TWFunc::read_file("/cache/key_file", key) == 0) { \
                       unsigned char* key_bytes = (unsigned char*) key.data(); \
-                      char crypto_blkdev[255]; \
-                      if (cryptfs_setup_ext_volume("userdata", "/dev/block/by-name/userdata", key_bytes, key.size(), crypto_blkdev) == 0) { \
-                          gui_print("Boot-time decrypt success with /cache/key_file.\\n"); \
-                      } else { \
-                          gui_err("Boot-time decrypt failed with /cache/key_file."); \
-                      } \
-                  } else { \
-                      gui_err("Boot-time failed to read /cache/key_file."); \
+                      ext4crypt::SetEncryptionPolicy("/data", key_bytes, key.size()); \
                   } \
               } \
               PartitionManager.Mount_By_Path("/data", true); \
               TWPartition* data = PartitionManager.Find_Partition_By_Path("/data"); \
               if (data && !data->Is_Mounted()) { \
-                  gui_print("Boot-time /data mount failed (Invalid argument). Forcing format...\\n"); \
                   PartitionManager.Format_Data(); \
                   PartitionManager.Wipe_By_Path("/data"); \
                   PartitionManager.Mount_By_Path("/data", true); \
@@ -154,72 +138,36 @@ jobs:
 
           sed -i '/if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) != 0) {/a \
               if (Mount_Point == "/data") { \
-                  gui_print("Data mount failed (errno=%d). Trying decrypt before format...\\n", errno); \
                   bool decrypted = false; \
                   PartitionManager.Mount_By_Path("/cache", true); \
-                  if (errno == 22 && TWFunc::Path_Exists("/data/misc/vold/user_keys")) { \
-                      gui_print("Trying standard FBE decrypt...\\n"); \
-                      decrypted = (DataManager::Decrypt_Data() == 0); \
-                  } \
-                  if (!decrypted && TWFunc::Path_Exists("/cache/key_file")) { \
-                      gui_print("Trying decrypt with /cache/key_file...\\n"); \
+                  if (TWFunc::Path_Exists("/cache/key_file")) { \
                       std::string key; \
                       if (TWFunc::read_file("/cache/key_file", key) == 0) { \
                           unsigned char* key_bytes = (unsigned char*) key.data(); \
-                          char crypto_blkdev[255]; \
-                          if (cryptfs_setup_ext_volume("userdata", Actual_Block_Device.c_str(), key_bytes, key.size(), crypto_blkdev) == 0) { \
-                              Decrypted_Block_Device = crypto_blkdev; \
-                              Is_Decrypted = true; \
-                              decrypted = true; \
-                              gui_print("Decrypt success with /cache/key_file.\\n"); \
-                          } else { \
-                              gui_err("Decrypt failed with /cache/key_file."); \
-                          } \
-                      } else { \
-                          gui_err("Failed to read /cache/key_file."); \
+                          decrypted = ext4crypt::SetEncryptionPolicy(Mount_Point, key_bytes, key.size()); \
                       } \
                   } \
+                  if (!decrypted && errno == 22 && TWFunc::Path_Exists("/data/misc/vold/user_keys")) { \
+                      decrypted = (DataManager::Decrypt_Data() == 0); \
+                  } \
                   if (decrypted) { \
-                      gui_print("Decrypt success. Retrying mount...\\n"); \
                       if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) == 0) { \
                           return true; \
                       } \
                   } \
-                  gui_print("Decrypt failed. Forcing format...\\n"); \
                   Format(); \
                   PartitionManager.Wipe_By_Path("/data"); \
-                  gui_print("Format and wipe completed for /data.\\n"); \
                   if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) == 0) { \
                       return true; \
                   } \
               }' partition.cpp
 
           sed -i '/if (strcmp(value, "data") == 0) {/a \
-              PartitionManager.Mount_By_Path("/cache", true); \
-              if (TWFunc::Path_Exists("/cache/key_file")) { \
-                  gui_print("ORS wipe: Trying decrypt with /cache/key_file...\\n"); \
-                  std::string key; \
-                  if (TWFunc::read_file("/cache/key_file", key) == 0) { \
-                      unsigned char* key_bytes = (unsigned char*) key.data(); \
-                      char crypto_blkdev[255]; \
-                      if (cryptfs_setup_ext_volume("userdata", "/dev/block/by-name/userdata", key_bytes, key.size(), crypto_blkdev) == 0) { \
-                          gui_print("ORS decrypt success with /cache/key_file.\\n"); \
-                      } else { \
-                          gui_err("ORS decrypt failed with /cache/key_file."); \
-                      } \
-                  } else { \
-                      gui_err("ORS failed to read /cache/key_file."); \
-                  } \
-              } \
               gui_msg("force_format_data=Forcing format data before wipe to avoid loop."); \
               if (!PartitionManager.Format_By_Path("/data")) { \
-                  gui_err("format_data_failed=Failed to format data."); \
                   ret_val = 1; \
               } else { \
-                  if (PartitionManager.Wipe_By_Path("/data")) { \
-                      gui_msg("wipe_data_success=Wipe data success after format."); \
-                  } else { \
-                      gui_err("wipe_data_failed=Wipe data failed."); \
+                  if (!PartitionManager.Wipe_By_Path("/data")) { \
                       ret_val = 1; \
                   } \
               }' openrecoveryscript.cpp
@@ -240,7 +188,9 @@ jobs:
         run: |
           source build/envsetup.sh
           export ALLOW_MISSING_DEPENDENCIES=true
-          lunch ${{ env.MAKEFILE_NAME }}-eng && make clean && make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
+          lunch ${{ env.MAKEFILE_NAME }}-eng
+          make clean
+          make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
@@ -253,7 +203,3 @@ jobs:
             workspace/out/target/product/${{ env.DEVICE_NAME }}/*vendor*.img
           name: ${{ env.DEVICE_NAME }}-${{ github.run_id }}
           tag_name: ${{ github.run_id }}
-          body: |
-            Manifest: ${{ env.MANIFEST_BRANCH }}
-            Device: ${{ env.DEVICE_NAME }}
-            Target: ${{ env.BUILD_TARGET }}.img
