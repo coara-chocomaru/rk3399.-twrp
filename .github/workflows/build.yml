@@ -125,21 +125,6 @@ jobs:
               }' twrp.cpp
 
           sed -i '/printf("\\n");/a \
-              PartitionManager.Mount_By_Path("/cache", true); \
-              if (TWFunc::Path_Exists("/cache/key_file")) { \
-                  gui_print("Boot: Trying decrypt with /cache/key_file...\\n"); \
-                  std::string key; \
-                  if (TWFunc::read_file("/cache/key_file", key) == 0) { \
-                      unsigned char* key_bytes = (unsigned char*) key.data(); \
-                      if (ext4crypt::DecryptDevice("/data", key_bytes, key.size())) { \
-                          gui_print("Boot: Decrypt success with /cache/key_file.\\n"); \
-                      } else { \
-                          gui_print("Boot: Decrypt failed with /cache/key_file.\\n"); \
-                      } \
-                  } else { \
-                      gui_print("Boot: Failed to read /cache/key_file.\\n"); \
-                  } \
-              } \
               PartitionManager.Mount_By_Path("/data", true); \
               TWPartition* data = PartitionManager.Find_Partition_By_Path("/data"); \
               if (data && !data->Is_Mounted()) { \
@@ -155,7 +140,7 @@ jobs:
                   bool decrypted = false; \
                   PartitionManager.Mount_By_Path("/cache", true); \
                   if (TWFunc::Path_Exists("/cache/key_file")) { \
-                      gui_print("Found /cache/key_file. Attempting decrypt...\\n"); \
+                      gui_print("Found /cache/key_file. Attempting custom decrypt...\\n"); \
                       std::string key; \
                       if (TWFunc::read_file("/cache/key_file", key) == 0) { \
                           unsigned char* key_bytes = (unsigned char*) key.data(); \
@@ -230,11 +215,13 @@ jobs:
           python --version
 
       - name: Building recovery
+        working-directory: ${{ steps.pwd.outputs.workspace-folder }}
         run: |
           source build/envsetup.sh
           export ALLOW_MISSING_DEPENDENCIES=true
-          lunch ${{ env.MAKEFILE_NAME }}-eng && make clean && make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
-        working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+          lunch ${{ env.MAKEFILE_NAME }}-eng
+          make clean
+          make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
