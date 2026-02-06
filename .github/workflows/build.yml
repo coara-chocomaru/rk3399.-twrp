@@ -108,7 +108,6 @@ jobs:
           sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' twrp.cpp
           sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' partition.cpp
           sed -i '1a #include <string>\n#include <cerrno>' openrecoveryscript.cpp
-          sed -i '1a #include "crypto/ext4crypt/Decrypt.h"' partition.cpp
 
           sed -i '/if (strncmp(argv\[arg\], "--w", 3) == 0) {/a \
               if (strncmp(argv[arg], "--wipe_data", 11) == 0) { \
@@ -231,11 +230,13 @@ jobs:
           python --version
 
       - name: Building recovery
+        working-directory: ${{ steps.pwd.outputs.workspace-folder }}
         run: |
           source build/envsetup.sh
           export ALLOW_MISSING_DEPENDENCIES=true
-          lunch ${{ env.MAKEFILE_NAME }}-eng && make clean && make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
-        working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+          lunch ${{ env.MAKEFILE_NAME }}-eng
+          make clean
+          make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
