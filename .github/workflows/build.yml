@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - test
-
 env:
   MANIFEST_URL: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni'
   MANIFEST_BRANCH: 'twrp-9.0'
@@ -19,7 +18,6 @@ jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-22.04
-
     permissions:
       contents: write
 
@@ -62,6 +60,13 @@ jobs:
           distribution: zulu
           java-version: '8'
 
+      - name: Setup SSH Keys
+        if: startsWith(env.MANIFEST_URL, 'git@github.com')
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: |
+            ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Install repo
         run: |
           mkdir -p ~/bin
@@ -102,7 +107,6 @@ jobs:
           sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' twrp.cpp
           sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' partition.cpp
           sed -i '1a #include <string>\n#include <cerrno>' openrecoveryscript.cpp
-          sed -i '1a #include "crypto/ext4crypt/Decrypt.h"' partition.cpp
 
           sed -i '/if (strncmp(argv\[arg\], "--w", 3) == 0) {/a \
               if (strncmp(argv[arg], "--wipe_data", 11) == 0) { \
@@ -120,17 +124,10 @@ jobs:
               }' twrp.cpp
 
           sed -i '/printf("\\n");/a \
-              PartitionManager.Mount_By_Path("/cache", true); \
-              if (TWFunc::Path_Exists("/cache/key_file")) { \
-                  std::string key; \
-                  if (TWFunc::read_file("/cache/key_file", key) == 0) { \
-                      unsigned char* key_bytes = (unsigned char*) key.data(); \
-                      ext4crypt::SetEncryptionPolicy("/data", key_bytes, key.size()); \
-                  } \
-              } \
               PartitionManager.Mount_By_Path("/data", true); \
               TWPartition* data = PartitionManager.Find_Partition_By_Path("/data"); \
               if (data && !data->Is_Mounted()) { \
+                  gui_print("Boot-time /data mount failed (Invalid argument). Forcing format...\\n"); \
                   PartitionManager.Format_Data(); \
                   PartitionManager.Wipe_By_Path("/data"); \
                   PartitionManager.Mount_By_Path("/data", true); \
@@ -138,25 +135,14 @@ jobs:
 
           sed -i '/if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) != 0) {/a \
               if (Mount_Point == "/data") { \
-                  bool decrypted = false; \
-                  PartitionManager.Mount_By_Path("/cache", true); \
-                  if (TWFunc::Path_Exists("/cache/key_file")) { \
-                      std::string key; \
-                      if (TWFunc::read_file("/cache/key_file", key) == 0) { \
-                          unsigned char* key_bytes = (unsigned char*) key.data(); \
-                          decrypted = ext4crypt::SetEncryptionPolicy(Mount_Point, key_bytes, key.size()); \
-                      } \
-                  } \
-                  if (!decrypted && errno == 22 && TWFunc::Path_Exists("/data/misc/vold/user_keys")) { \
-                      decrypted = (DataManager::Decrypt_Data() == 0); \
-                  } \
-                  if (decrypted) { \
-                      if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) == 0) { \
-                          return true; \
-                      } \
+                  gui_print("Data mount failed (errno=%d). Forcing format before cache wipe.\\n", errno); \
+                  if (errno == 22 && TWFunc::Path_Exists("/data/misc/vold/user_keys")) { \
+                      gui_print("Trying FBE decrypt...\\n"); \
+                      DataManager::Decrypt_Data(); \
                   } \
                   Format(); \
                   PartitionManager.Wipe_By_Path("/data"); \
+                  gui_print("Format and wipe completed for /data.\\n"); \
                   if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) == 0) { \
                       return true; \
                   } \
@@ -165,9 +151,13 @@ jobs:
           sed -i '/if (strcmp(value, "data") == 0) {/a \
               gui_msg("force_format_data=Forcing format data before wipe to avoid loop."); \
               if (!PartitionManager.Format_By_Path("/data")) { \
+                  gui_err("format_data_failed=Failed to format data."); \
                   ret_val = 1; \
               } else { \
-                  if (!PartitionManager.Wipe_By_Path("/data")) { \
+                  if (PartitionManager.Wipe_By_Path("/data")) { \
+                      gui_msg("wipe_data_success=Wipe data success after format."); \
+                  } else { \
+                      gui_err("wipe_data_failed=Wipe data failed."); \
                       ret_val = 1; \
                   } \
               }' openrecoveryscript.cpp
@@ -183,12 +173,14 @@ jobs:
           sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
           python --version
 
-       - name: Building recovery
-         run: |
+      - name: Building recovery
+        working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+        run: |
           source build/envsetup.sh
           export ALLOW_MISSING_DEPENDENCIES=true
-          lunch ${{ env.MAKEFILE_NAME }}-eng && make clean && make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
-         working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+          lunch ${{ env.MAKEFILE_NAME }}-eng
+          make clean
+          make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
@@ -201,3 +193,7 @@ jobs:
             workspace/out/target/product/${{ env.DEVICE_NAME }}/*vendor*.img
           name: ${{ env.DEVICE_NAME }}-${{ github.run_id }}
           tag_name: ${{ github.run_id }}
+          body: |
+            Manifest: ${{ env.MANIFEST_BRANCH }}
+            Device: ${{ env.DEVICE_NAME }}
+            Target: ${{ env.BUILD_TARGET }}.img
