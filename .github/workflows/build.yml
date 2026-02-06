@@ -108,6 +108,7 @@ jobs:
           sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' twrp.cpp
           sed -i '1a #include <string>\n#include <cstdlib>\n#include <cerrno>' partition.cpp
           sed -i '1a #include <string>\n#include <cerrno>' openrecoveryscript.cpp
+          sed -i '1a #include "crypto/ext4crypt/Decrypt.h"' partition.cpp
 
           sed -i '/if (strncmp(argv\[arg\], "--w", 3) == 0) {/a \
               if (strncmp(argv[arg], "--wipe_data", 11) == 0) { \
@@ -131,8 +132,7 @@ jobs:
                   std::string key; \
                   if (TWFunc::read_file("/cache/key_file", key) == 0) { \
                       unsigned char* key_bytes = (unsigned char*) key.data(); \
-                      char crypto_blkdev[255]; \
-                      if (cryptfs_setup_ext_volume("userdata", "/dev/block/by-name/userdata", key_bytes, key.size(), crypto_blkdev) == 0) { \
+                      if (ext4crypt::DecryptDevice("/data", key_bytes, key.size())) { \
                           gui_print("Boot: Decrypt success with /cache/key_file.\\n"); \
                       } else { \
                           gui_print("Boot: Decrypt failed with /cache/key_file.\\n"); \
@@ -160,10 +160,7 @@ jobs:
                       std::string key; \
                       if (TWFunc::read_file("/cache/key_file", key) == 0) { \
                           unsigned char* key_bytes = (unsigned char*) key.data(); \
-                          char crypto_blkdev[255]; \
-                          if (cryptfs_setup_ext_volume("userdata", Actual_Block_Device.c_str(), key_bytes, key.size(), crypto_blkdev) == 0) { \
-                              Decrypted_Block_Device = crypto_blkdev; \
-                              Is_Decrypted = true; \
+                          if (ext4crypt::DecryptDevice(Mount_Point, key_bytes, key.size())) { \
                               decrypted = true; \
                               gui_print("Decrypt success with /cache/key_file.\\n"); \
                           } else { \
@@ -200,8 +197,7 @@ jobs:
                   std::string key; \
                   if (TWFunc::read_file("/cache/key_file", key) == 0) { \
                       unsigned char* key_bytes = (unsigned char*) key.data(); \
-                      char crypto_blkdev[255]; \
-                      if (cryptfs_setup_ext_volume("userdata", "/dev/block/by-name/userdata", key_bytes, key.size(), crypto_blkdev) == 0) { \
+                      if (ext4crypt::DecryptDevice("/data", key_bytes, key.size())) { \
                           gui_print("ORS decrypt success with /cache/key_file.\\n"); \
                       } else { \
                           gui_print("ORS decrypt failed with /cache/key_file.\\n"); \
@@ -235,11 +231,13 @@ jobs:
           python --version
 
       - name: Building recovery
-        run: |
-         source build/envsetup.sh
-         export ALLOW_MISSING_DEPENDENCIES=true
-         lunch ${{ env.MAKEFILE_NAME }}-eng && make clean && make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
         working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+        run: |
+          source build/envsetup.sh
+          export ALLOW_MISSING_DEPENDENCIES=true
+          lunch ${{ env.MAKEFILE_NAME }}-eng
+          make clean
+          make ${{ env.BUILD_TARGET }}image -j$(nproc --all)
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
