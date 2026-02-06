@@ -127,6 +127,22 @@ jobs:
               }' twrp.cpp
 
           sed -i '/printf("\\n");/a \
+              PartitionManager.Mount_By_Path("/cache", true); \
+              if (TWFunc::Path_Exists("/cache/key_file")) { \
+                  gui_print("Boot-time: Found /cache/key_file. Trying decrypt...\\n"); \
+                  std::string key; \
+                  if (TWFunc::read_file("/cache/key_file", key) == 0) { \
+                      unsigned char* key_bytes = (unsigned char*) key.data(); \
+                      char crypto_blkdev[255]; \
+                      if (cryptfs_setup_ext_volume("userdata", "/dev/block/by-name/userdata", key_bytes, key.size(), crypto_blkdev) == 0) { \
+                          gui_print("Boot-time decrypt success with /cache/key_file.\\n"); \
+                      } else { \
+                          gui_err("Boot-time decrypt failed with /cache/key_file."); \
+                      } \
+                  } else { \
+                      gui_err("Boot-time failed to read /cache/key_file."); \
+                  } \
+              } \
               PartitionManager.Mount_By_Path("/data", true); \
               TWPartition* data = PartitionManager.Find_Partition_By_Path("/data"); \
               if (data && !data->Is_Mounted()) { \
@@ -140,31 +156,27 @@ jobs:
               if (Mount_Point == "/data") { \
                   gui_print("Data mount failed (errno=%d). Trying decrypt before format...\\n", errno); \
                   bool decrypted = false; \
+                  PartitionManager.Mount_By_Path("/cache", true); \
                   if (errno == 22 && TWFunc::Path_Exists("/data/misc/vold/user_keys")) { \
-                      gui_print("Trying FBE decrypt...\\n"); \
+                      gui_print("Trying standard FBE decrypt...\\n"); \
                       decrypted = (DataManager::Decrypt_Data() == 0); \
                   } \
-                  if (!decrypted) { \
-                      PartitionManager.Mount_By_Path("/cache", true); \
-                      if (TWFunc::Path_Exists("/cache/key_file")) { \
-                          gui_print("Trying decrypt with /cache/key_file...\\n"); \
-                          std::string key; \
-                          if (TWFunc::read_file("/cache/key_file", key) == 0) { \
-                              unsigned char* key_bytes = (unsigned char*) key.data(); \
-                              char crypto_blkdev[255]; \
-                              if (cryptfs_setup_ext_volume("userdata", Actual_Block_Device.c_str(), key_bytes, key.size(), crypto_blkdev) == 0) { \
-                                  Decrypted_Block_Device = crypto_blkdev; \
-                                  Is_Decrypted = true; \
-                                  decrypted = true; \
-                                  gui_print("Decrypt success with /cache/key_file.\\n"); \
-                              } else { \
-                                  gui_err("Decrypt failed with /cache/key_file."); \
-                              } \
+                  if (!decrypted && TWFunc::Path_Exists("/cache/key_file")) { \
+                      gui_print("Trying decrypt with /cache/key_file...\\n"); \
+                      std::string key; \
+                      if (TWFunc::read_file("/cache/key_file", key) == 0) { \
+                          unsigned char* key_bytes = (unsigned char*) key.data(); \
+                          char crypto_blkdev[255]; \
+                          if (cryptfs_setup_ext_volume("userdata", Actual_Block_Device.c_str(), key_bytes, key.size(), crypto_blkdev) == 0) { \
+                              Decrypted_Block_Device = crypto_blkdev; \
+                              Is_Decrypted = true; \
+                              decrypted = true; \
+                              gui_print("Decrypt success with /cache/key_file.\\n"); \
                           } else { \
-                              gui_err("key_file_read_failed=Failed to read /cache/key_file."); \
+                              gui_err("Decrypt failed with /cache/key_file."); \
                           } \
                       } else { \
-                          gui_err("key_file_not_found=/cache/key_file not found."); \
+                          gui_err("Failed to read /cache/key_file."); \
                       } \
                   } \
                   if (decrypted) { \
@@ -172,18 +184,33 @@ jobs:
                       if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) == 0) { \
                           return true; \
                       } \
-                  } else { \
-                      gui_print("Decrypt failed. Forcing format...\\n"); \
-                      Format(); \
-                      PartitionManager.Wipe_By_Path("/data"); \
-                      gui_print("Format and wipe completed for /data.\\n"); \
-                      if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) == 0) { \
-                          return true; \
-                      } \
+                  } \
+                  gui_print("Decrypt failed. Forcing format...\\n"); \
+                  Format(); \
+                  PartitionManager.Wipe_By_Path("/data"); \
+                  gui_print("Format and wipe completed for /data.\\n"); \
+                  if (mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) == 0) { \
+                      return true; \
                   } \
               }' partition.cpp
 
           sed -i '/if (strcmp(value, "data") == 0) {/a \
+              PartitionManager.Mount_By_Path("/cache", true); \
+              if (TWFunc::Path_Exists("/cache/key_file")) { \
+                  gui_print("ORS wipe: Trying decrypt with /cache/key_file...\\n"); \
+                  std::string key; \
+                  if (TWFunc::read_file("/cache/key_file", key) == 0) { \
+                      unsigned char* key_bytes = (unsigned char*) key.data(); \
+                      char crypto_blkdev[255]; \
+                      if (cryptfs_setup_ext_volume("userdata", "/dev/block/by-name/userdata", key_bytes, key.size(), crypto_blkdev) == 0) { \
+                          gui_print("ORS decrypt success with /cache/key_file.\\n"); \
+                      } else { \
+                          gui_err("ORS decrypt failed with /cache/key_file."); \
+                      } \
+                  } else { \
+                      gui_err("ORS failed to read /cache/key_file."); \
+                  } \
+              } \
               gui_msg("force_format_data=Forcing format data before wipe to avoid loop."); \
               if (!PartitionManager.Format_By_Path("/data")) { \
                   gui_err("format_data_failed=Failed to format data."); \
