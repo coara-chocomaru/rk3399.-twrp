@@ -154,7 +154,8 @@ TW_SUPPORT_INPUT_AIDL_HAPTICS_FIX_OFF := false
 
 
 # TWRP Configuration
-TW_THEME := portrait_hdpi
+TW_THEME := landscape_hdpi
+TW_ROTATION := 90
 TW_EXTRA_LANGUAGES := true
 TW_DEFAULT_LANGUAGE := ja
 TW_SCREEN_BLANK_ON_BOOT := true
@@ -168,5 +169,5 @@ TW_BRIGHTNESS_PATH := /sys/devices/platform/backlight/backlight/backlight/bright
 TW_DEFAULT_BRIGHTNESS := 120
 TW_MAX_BRIGHTNESS := 255
 TW_DEVICE_VERSION := $(shell date -u +" %F")
-RECOVERY_TOUCHSCREEN_SWAP_XY := true
-RECOVERY_TOUCHSCREEN_FLIP_X := true
+RECOVERY_TOUCHSCREEN_SWAP_Y := true
+RECOVERY_TOUCHSCREEN_FLIP_XY := true
