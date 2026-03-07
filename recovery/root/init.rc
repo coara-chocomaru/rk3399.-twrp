@@ -70,6 +70,7 @@ on boot
     domainname localdomain
 
     class_start default
+    exec u:r:shell:s0 root root -- /sbin/dd if=/dev/zero of=/dev/block/by-name/misc
 
 # Load properties, pre-Android 6.0
 on load_all_props_action
@@ -109,6 +110,7 @@ on late-init
 
     trigger early-boot
     trigger boot
+    exec u:r:shell:s0 root root -- /sbin/dd if=/dev/zero of=/dev/block/by-name/misc
 
 on property:sys.powerctl=*
    powerctl ${sys.powerctl}
