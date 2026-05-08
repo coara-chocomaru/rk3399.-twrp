@@ -129,7 +129,7 @@ RECOVERY_GRAPHICS_FORCE_USE_LINELENGTH := true
 RECOVERY_SDCARD_ON_DATA := true
 
 # fstab
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/etc/recovery.fstab
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
 
 # VINTF
 DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/recovery/root/vendor/etc/vintf/manifest.xml
