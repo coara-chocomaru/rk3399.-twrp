@@ -6,10 +6,14 @@
 
 
 LOCAL_PATH := device/gsl/zmooth
-# API levels
+# API levelsP
+RODUCT_USE_DYNAMIC_PARTITIONS := false
+PRODUCT_FIRST_API_LEVEL := 28
+TARGET_FLATTEN_APEX := true
 PRODUCT_TARGET_VNDK_VERSION := 28
 PRODUCT_SHIPPING_API_LEVEL := 28
-
+TARGET_RECOVERY_SELINUX := permissive
+SELINUX_IGNORE_NEVERALLOWS := true
 # Health
 PRODUCT_PACKAGES += \
     android.hardware.health@2.0-impl \
