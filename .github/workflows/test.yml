@@ -107,17 +107,17 @@ jobs:
         sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
         python --version
 
-- name: Zip bin directory
-  run: |
-    cd workspace/out/host/linux-x86
-    zip -r bin.zip bin
+    - name: Zip bin directory
+      run: |
+        cd workspace/out/host/linux-x86
+        zip -r bin.zip bin
 
-- name: Upload to Release
-  uses: softprops/action-gh-release@v1
-  with:
-    files: workspace/out/host/linux-x86/bin.zip
-    body: |
-      Manifest: ${{ env.MANIFEST_BRANCH }}
-      Device: ${{ env.DEVICE_NAME }}
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: workspace/out/host/linux-x86/bin.zip
+        body: |
+          Manifest: ${{ env.MANIFEST_BRANCH }}
+          Device: ${{ env.DEVICE_NAME }}
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
