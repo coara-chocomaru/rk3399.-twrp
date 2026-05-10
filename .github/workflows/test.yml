@@ -1,33 +1,20 @@
-name: Build TWRP
+name: Recovery Build (Legacy)
 
 on:
-  workflow_dispatch:
-    inputs:
-      MANIFEST_URL:
-        default: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni'
-        required: true
-      MANIFEST_BRANCH:
-        default: 'twrp-9.0'
-        required: true
-      DEVICE_TREE_URL:
-        default: 'https://github.com/coara-chocomaru/rk3399.-twrp'
-        required: true
-      DEVICE_TREE_BRANCH:
-        default: 'main'
-        required: true
-      DEVICE_PATH:
-        default: 'device/gsl/zmooth'
-        required: true
-      DEVICE_NAME:
-        default: 'zmooth'
-        required: true
-      MAKEFILE_NAME:
-        default: 'zmooth_twrp'
-        required: true
-      BUILD_TARGET:
-        default: 'recovery'
-        required: true
+  push:
+    branches:
+      - main  # 実行するブランチを指定
 
+env:
+  MANIFEST_URL: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni'
+  MANIFEST_BRANCH: 'twrp-9.0'
+  DEVICE_TREE_URL: 'https://github.com/coara-chocomaru/rk3399.-twrp'
+  DEVICE_TREE_BRANCH: 'main'
+  DEVICE_PATH: 'device/gsl/zmooth'
+  DEVICE_NAME: 'zmooth'
+  MAKEFILE_NAME: 'zmooth_twrp'
+  BUILD_TARGET: 'recovery'
+  
 jobs:
   build:
     runs-on: ubuntu-22.04
